@@ -1,4 +1,4 @@
-from tkinter import Tk,Canvas,PhotoImage,Button,Label,Text
+from tkinter import Tk,Canvas,PhotoImage,Button,Label
 from tkinter.font import Font,BOLD
 import random,time
 import sys
