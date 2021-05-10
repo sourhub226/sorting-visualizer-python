@@ -2,7 +2,7 @@
 ![ViewCount](https://views.whatilearened.today/views/github/sourhub226/sorting-visualizer-python.svg)
 
 # Sorting Visualizer GUI
-An app that visually shows how different sorting algorithms work.
+Python app that visually shows how different sorting algorithms work.
 
 Made in python using `Tkinter` module.
 
