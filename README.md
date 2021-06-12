@@ -4,8 +4,17 @@
 [![Github All Releases](https://img.shields.io/github/downloads/sourhub226/sorting-visualizer-python/total.svg)](https://github.com/sourhub226/sorting-visualizer-python/releases)
 
 # Sorting Visualizer GUI
+
 Python app that visually shows how different sorting algorithms work.
 
 Made in python using `Tkinter` module.
 
 ![GUI](preview.png)
+
+### Python Dependencies
+
+-   [`colour` library](https://pypi.org/project/colour/) (For rainbow gradient)
+
+Install the above python dependency using the following command
+
+    pip install -r requirements.txt
