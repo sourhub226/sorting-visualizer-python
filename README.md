@@ -17,7 +17,7 @@ Made in python using `Tkinter` module.
 
 ![GUI](after-sorting.png)
 
-### Python Dependencies
+### Python Dependencies:
 
 -   [`colour` library](https://pypi.org/project/colour/) (For rainbow gradient)
 
