@@ -3,8 +3,9 @@ from tkinter.font import Font, BOLD
 import random
 import time
 import sys
+from colour import Color
 
-canvasbackground = "#191919"
+canvasbackground = "#202124"
 sortSpeed = 0
 no_of_pipes = 128
 gap = 1
@@ -12,6 +13,9 @@ pipeWidth = 5
 screenWidth = 1180 - 133
 screenHeight = 522
 y1Range = 512
+pipeColors = list(Color("red").range_to(Color("violet"), no_of_pipes))
+
+
 screen = Tk()
 # screen.geometry((f"{screenWidth}x{screenHeight}"))
 screen.title("Sorting Visualizer (Made by Sourabh Sathe)")
@@ -109,7 +113,14 @@ def drawPipes():
         y1 = screenHeight - 10 - Global.y1CoorList[i]
         x2 = x1 + pipeWidth
         y2 = canvasHeight - 2
-        canvas.create_rectangle(x1, y1, x2, y2, fill="#fb0", outline="")
+        canvas.create_rectangle(
+            x1,
+            y1,
+            x2,
+            y2,
+            fill=pipeColors[int(Global.y1CoorList[i] / 4)].hex,
+            outline="",
+        )
     canvas.update()
 
 
@@ -879,6 +890,7 @@ def callBitonicSort():
     print(Global.y1CoorList)
 
 
+# UI related code below
 screen.update()
 b1 = Button(
     screen,
