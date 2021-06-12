@@ -4,7 +4,6 @@ import random, time
 import sys
 
 canvasbackground = "#191919"
-closeWindow = False
 sortSpeed = 0
 no_of_pipes = 128
 gap = 1
@@ -33,15 +32,36 @@ canvasHeight = screenHeight - 4
 canvas = Canvas(screen, width=canvasWidth, height=canvasHeight, bg=canvasbackground)
 canvas.place(x=0, y=0)
 pixelVirtual = PhotoImage(width=1, height=1)
-sortdone = False
 
-y1CoorList = random.sample(range(0, y1Range, int(y1Range / no_of_pipes)), no_of_pipes)
-n = len(y1CoorList)
-print(y1CoorList)
+
+class Global:
+    def __init__(self):
+        self.y1CoorList = random.sample(
+            range(0, y1Range, int(y1Range / no_of_pipes)), no_of_pipes
+        )
+        print(self.y1CoorList)
+        self.sortdone = False
+        self.closeWindow = False
+
+
+Global = Global()
+n = len(Global.y1CoorList)
+print(n)
+
+
+def check_sortdone():
+    if Global.sortdone:
+        status.config(
+            text="Already Sorted. Press Shuffle.",
+            foreground="#FF0000",
+            font=Font(size=11, weight=BOLD),
+        )
+        return False
+    return True
 
 
 def blockBtn():
-    global btnList
+    # global btnList
     status.config(
         text="Sorting in progress",
         foreground="#FF0000",
@@ -53,7 +73,7 @@ def blockBtn():
 
 
 def unblockBtn():
-    global btnList
+    # global btnList
     status.config(
         text="Sorting Complete!", foreground="#008000", font=Font(size=11, weight=BOLD)
     )
@@ -68,25 +88,25 @@ def clearCanvas():
 
 
 def shufflePipes():
-    global y1CoorList, sortdone
+    # global Global.y1CoorList, Global.sortdone
     status.config(
         text="Press a button to begin sorting", foreground="#000000", font=Font(size=9)
     )
-    y1CoorList = random.sample(
+    Global.y1CoorList = random.sample(
         range(0, y1Range, int(y1Range / no_of_pipes)), no_of_pipes
     )
     drawPipes()
-    sortdone = False
-    print(y1CoorList)
+    Global.sortdone = False
+    print(Global.y1CoorList)
 
 
 def drawPipes():
-    global y1CoorList
+    # global Global.y1CoorList
     clearCanvas()
     x1 = -pipeWidth + gap * 2
     for i in range(no_of_pipes):
         x1 = x1 + pipeWidth + gap
-        y1 = screenHeight - 10 - y1CoorList[i]
+        y1 = screenHeight - 10 - Global.y1CoorList[i]
         x2 = x1 + pipeWidth
         y2 = canvasHeight - 2
         canvas.create_rectangle(x1, y1, x2, y2, fill="#fb0", outline="")
@@ -94,20 +114,16 @@ def drawPipes():
 
 
 def delay(sortSpeed):
-    if closeWindow:
+    if Global.closeWindow:
         sys.exit()
     drawPipes()
     time.sleep(sortSpeed)
 
 
+# algorithms below
 def bubbleSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     num = n - 1
@@ -115,144 +131,136 @@ def bubbleSort():
     while swap:
         swap = False
         for i in range(num):
-            if y1CoorList[i] > y1CoorList[i + 1]:
-                y1CoorList[i], y1CoorList[i + 1] = y1CoorList[i + 1], y1CoorList[i]
+            if Global.y1CoorList[i] > Global.y1CoorList[i + 1]:
+                Global.y1CoorList[i], Global.y1CoorList[i + 1] = (
+                    Global.y1CoorList[i + 1],
+                    Global.y1CoorList[i],
+                )
                 swap = True
         delay(0.05)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def selectionSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     for i in range(n):
         min_idx = i
         for j in range(i + 1, n):
-            if y1CoorList[min_idx] > y1CoorList[j]:
+            if Global.y1CoorList[min_idx] > Global.y1CoorList[j]:
                 min_idx = j
-        y1CoorList[i], y1CoorList[min_idx] = y1CoorList[min_idx], y1CoorList[i]
+        Global.y1CoorList[i], Global.y1CoorList[min_idx] = (
+            Global.y1CoorList[min_idx],
+            Global.y1CoorList[i],
+        )
         delay(0.05)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def insertionSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     for i in range(1, n):
-        key = y1CoorList[i]
+        key = Global.y1CoorList[i]
         j = i - 1
-        while j >= 0 and key < y1CoorList[j]:
-            y1CoorList[j + 1] = y1CoorList[j]
+        while j >= 0 and key < Global.y1CoorList[j]:
+            Global.y1CoorList[j + 1] = Global.y1CoorList[j]
             j -= 1
-        y1CoorList[j + 1] = key
+        Global.y1CoorList[j + 1] = key
         delay(0.03)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def shellSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     incr = n // 2
     while incr > 0:
         for i in range(incr, n):
-            temp = y1CoorList[i]
+            temp = Global.y1CoorList[i]
             j = i
-            while j >= incr and y1CoorList[j - incr] > temp:
-                y1CoorList[j] = y1CoorList[j - incr]
+            while j >= incr and Global.y1CoorList[j - incr] > temp:
+                Global.y1CoorList[j] = Global.y1CoorList[j - incr]
                 j -= incr
-            y1CoorList[j] = temp
+            Global.y1CoorList[j] = temp
             if i % 3 == 0:
                 delay(0)
         incr //= 2
     delay(0)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def counting(place):
-    global y1CoorList
-    y1CoorListput = [0] * n
+    # global Global.y1CoorList
+    Global.y1CoorListput = [0] * n
     count = [0] * 10
     for i in range(n):
-        index = y1CoorList[i] // place
+        index = Global.y1CoorList[i] // place
         count[index % 10] += 1
     for i in range(1, 10):
         count[i] += count[i - 1]
     i = n - 1
     while i >= 0:
-        index = y1CoorList[i] // place
-        y1CoorListput[count[index % 10] - 1] = y1CoorList[i]
+        index = Global.y1CoorList[i] // place
+        Global.y1CoorListput[count[index % 10] - 1] = Global.y1CoorList[i]
         count[index % 10] -= 1
         i -= 1
     for i in range(n):
-        y1CoorList[i] = y1CoorListput[i]
+        Global.y1CoorList[i] = Global.y1CoorListput[i]
         delay(0)
 
 
 def radixSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
-    max_element = max(y1CoorList)
+    max_element = max(Global.y1CoorList)
     place = 1
     while max_element // place > 0:
         counting(place)
         place *= 10
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def partition(low, high):
-    global y1CoorList
+    # global Global.y1CoorList
     i = low - 1
-    pivot = y1CoorList[high]
+    pivot = Global.y1CoorList[high]
 
     for j in range(low, high):
-        if y1CoorList[j] <= pivot:
+        if Global.y1CoorList[j] <= pivot:
             i = i + 1
-            y1CoorList[i], y1CoorList[j] = y1CoorList[j], y1CoorList[i]
+            Global.y1CoorList[i], Global.y1CoorList[j] = (
+                Global.y1CoorList[j],
+                Global.y1CoorList[i],
+            )
             delay(0)
-    y1CoorList[i + 1], y1CoorList[high] = y1CoorList[high], y1CoorList[i + 1]
+    Global.y1CoorList[i + 1], Global.y1CoorList[high] = (
+        Global.y1CoorList[high],
+        Global.y1CoorList[i + 1],
+    )
     return i + 1
 
 
 def quickSort(low, high):
-    global y1CoorList
+    # global Global.y1CoorList
     if low < high:
         pi = partition(low, high)
         quickSort(low, pi - 1)
@@ -260,20 +268,15 @@ def quickSort(low, high):
 
 
 def callQuickSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     quickSort(0, n - 1)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
     delay(0)
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def mergeR(l, m, r):
@@ -282,28 +285,28 @@ def mergeR(l, m, r):
     L = [0] * (n1)
     R = [0] * (n2)
     for i in range(n1):
-        L[i] = y1CoorList[l + i]
+        L[i] = Global.y1CoorList[l + i]
     for j in range(n2):
-        R[j] = y1CoorList[m + 1 + j]
-    i = 0  # Initial index of first suby1CoorListay
-    j = 0  # Initial index of second suby1CoorListay
-    k = l  # Initial index of merged suby1CoorListay
+        R[j] = Global.y1CoorList[m + 1 + j]
+    i = 0  # Initial index of first subGlobal.y1CoorListay
+    j = 0  # Initial index of second subGlobal.y1CoorListay
+    k = l  # Initial index of merged subGlobal.y1CoorListay
     while i < n1 and j < n2:
         if L[i] <= R[j]:
-            y1CoorList[k] = L[i]
+            Global.y1CoorList[k] = L[i]
             i += 1
         else:
-            y1CoorList[k] = R[j]
+            Global.y1CoorList[k] = R[j]
             j += 1
         k += 1
         delay(0)
     while i < n1:
-        y1CoorList[k] = L[i]
+        Global.y1CoorList[k] = L[i]
         i += 1
         k += 1
         delay(0)
     while j < n2:
-        y1CoorList[k] = R[j]
+        Global.y1CoorList[k] = R[j]
         j += 1
         k += 1
         delay(0)
@@ -318,29 +321,19 @@ def mergeSortR(l, r):
 
 
 def callMergeSortR():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     mergeSortR(0, n - 1)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def cocktailSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     swapped = True
@@ -349,8 +342,11 @@ def cocktailSort():
     while swapped:
         swapped = False
         for i in range(start, end):
-            if y1CoorList[i] > y1CoorList[i + 1]:
-                y1CoorList[i], y1CoorList[i + 1] = y1CoorList[i + 1], y1CoorList[i]
+            if Global.y1CoorList[i] > Global.y1CoorList[i + 1]:
+                Global.y1CoorList[i], Global.y1CoorList[i + 1] = (
+                    Global.y1CoorList[i + 1],
+                    Global.y1CoorList[i],
+                )
                 swapped = True
         delay(0.05)
         if not swapped:
@@ -358,39 +354,37 @@ def cocktailSort():
         swapped = False
         end = end - 1
         for i in range(end - 1, start - 1, -1):
-            if y1CoorList[i] > y1CoorList[i + 1]:
-                y1CoorList[i], y1CoorList[i + 1] = y1CoorList[i + 1], y1CoorList[i]
+            if Global.y1CoorList[i] > Global.y1CoorList[i + 1]:
+                Global.y1CoorList[i], Global.y1CoorList[i + 1] = (
+                    Global.y1CoorList[i + 1],
+                    Global.y1CoorList[i],
+                )
                 swapped = True
         delay(0.05)
         start += 1
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 RUN = 32
 
 
 def insertionSortTim(left, right):
-    global y1CoorList
+    # global Global.y1CoorList
     for i in range(left + 1, right + 1):
-        temp = y1CoorList[i]
+        temp = Global.y1CoorList[i]
         j = i - 1
-        while y1CoorList[j] > temp and j >= left:
-            y1CoorList[j + 1] = y1CoorList[j]
+        while Global.y1CoorList[j] > temp and j >= left:
+            Global.y1CoorList[j + 1] = Global.y1CoorList[j]
             j -= 1
-        y1CoorList[j + 1] = temp
+        Global.y1CoorList[j + 1] = temp
         delay(0)
 
 
 def timSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     for i in range(0, n, RUN):
@@ -402,74 +396,70 @@ def timSort():
             right = min((left + 2 * size - 1), (n - 1))
             mergeR(left, mid, right)
         size = 2 * size
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def heapify(n, i):
-    global y1CoorList
+    # global Global.y1CoorList
 
     largest = i  # Initialize largest as root
     l = 2 * i + 1  # left = 2*i + 1
     r = 2 * i + 2  # right = 2*i + 2
-    if l < n and y1CoorList[i] < y1CoorList[l]:
+    if l < n and Global.y1CoorList[i] < Global.y1CoorList[l]:
         largest = l
-    if r < n and y1CoorList[largest] < y1CoorList[r]:
+    if r < n and Global.y1CoorList[largest] < Global.y1CoorList[r]:
         largest = r
     if largest != i:
-        y1CoorList[i], y1CoorList[largest] = y1CoorList[largest], y1CoorList[i]
+        Global.y1CoorList[i], Global.y1CoorList[largest] = (
+            Global.y1CoorList[largest],
+            Global.y1CoorList[i],
+        )
         delay(0)
         heapify(n, largest)
 
 
 def heapSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     for i in range(n, -1, -1):
         heapify(n, i)
     for i in range(n - 1, 0, -1):
-        y1CoorList[i], y1CoorList[0] = y1CoorList[0], y1CoorList[i]
+        Global.y1CoorList[i], Global.y1CoorList[0] = (
+            Global.y1CoorList[0],
+            Global.y1CoorList[i],
+        )
         heapify(i, 0)
     delay(0)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def countingSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
-    max_val = max(y1CoorList)
+    max_val = max(Global.y1CoorList)
     m = max_val + 1
     count = [0] * m
-    for a in y1CoorList:
+    for a in Global.y1CoorList:
         count[a] += 1
 
     i = 0
     for a in range(m):
         for _ in range(count[a]):
-            y1CoorList[i] = a
+            Global.y1CoorList[i] = a
             i += 1
             delay(0.05)
 
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def getNextGap(gap):
@@ -481,13 +471,8 @@ def getNextGap(gap):
 
 
 def combSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     gap = n
@@ -497,90 +482,96 @@ def combSort():
         gap = getNextGap(gap)
         swapped = False
         for i in range(n - gap):
-            if y1CoorList[i] > y1CoorList[i + gap]:
-                y1CoorList[i], y1CoorList[i + gap] = y1CoorList[i + gap], y1CoorList[i]
+            if Global.y1CoorList[i] > Global.y1CoorList[i + gap]:
+                Global.y1CoorList[i], Global.y1CoorList[i + gap] = (
+                    Global.y1CoorList[i + gap],
+                    Global.y1CoorList[i],
+                )
                 swapped = True
                 delay(0)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def pancakeSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     cur = n
     while cur > 1:
-        mi = y1CoorList.index(max(y1CoorList[0:cur]))
-        y1CoorList = y1CoorList[mi::-1] + y1CoorList[mi + 1 : len(y1CoorList)]
-        y1CoorList = y1CoorList[cur - 1 :: -1] + y1CoorList[cur : len(y1CoorList)]
+        mi = Global.y1CoorList.index(max(Global.y1CoorList[0:cur]))
+        Global.y1CoorList = (
+            Global.y1CoorList[mi::-1]
+            + Global.y1CoorList[mi + 1 : len(Global.y1CoorList)]
+        )
+        Global.y1CoorList = (
+            Global.y1CoorList[cur - 1 :: -1]
+            + Global.y1CoorList[cur : len(Global.y1CoorList)]
+        )
         cur -= 1
         delay(0.05)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def gnomeSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
-    for pos in range(1, len(y1CoorList)):
-        while pos != 0 and y1CoorList[pos] < y1CoorList[pos - 1]:
-            y1CoorList[pos], y1CoorList[pos - 1] = y1CoorList[pos - 1], y1CoorList[pos]
+    for pos in range(1, len(Global.y1CoorList)):
+        while pos != 0 and Global.y1CoorList[pos] < Global.y1CoorList[pos - 1]:
+            Global.y1CoorList[pos], Global.y1CoorList[pos - 1] = (
+                Global.y1CoorList[pos - 1],
+                Global.y1CoorList[pos],
+            )
             pos = pos - 1
         delay(0.01)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def oddEvenSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     isSorted = 0
     while isSorted == 0:
         isSorted = 1
         for i in range(1, n - 1, 2):
-            if y1CoorList[i] > y1CoorList[i + 1]:
-                y1CoorList[i], y1CoorList[i + 1] = y1CoorList[i + 1], y1CoorList[i]
+            if Global.y1CoorList[i] > Global.y1CoorList[i + 1]:
+                Global.y1CoorList[i], Global.y1CoorList[i + 1] = (
+                    Global.y1CoorList[i + 1],
+                    Global.y1CoorList[i],
+                )
                 isSorted = 0
         for i in range(0, n - 1, 2):
-            if y1CoorList[i] > y1CoorList[i + 1]:
-                y1CoorList[i], y1CoorList[i + 1] = y1CoorList[i + 1], y1CoorList[i]
+            if Global.y1CoorList[i] > Global.y1CoorList[i + 1]:
+                Global.y1CoorList[i], Global.y1CoorList[i + 1] = (
+                    Global.y1CoorList[i + 1],
+                    Global.y1CoorList[i],
+                )
                 isSorted = 0
         delay(0.05)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def stoogeSort(l, h, show):
-    global y1CoorList
+    # global Global.y1CoorList
     if l >= h:
         return
-    if y1CoorList[l] > y1CoorList[h]:
-        y1CoorList[h], y1CoorList[l] = y1CoorList[l], y1CoorList[h]
+    if Global.y1CoorList[l] > Global.y1CoorList[h]:
+        Global.y1CoorList[h], Global.y1CoorList[l] = (
+            Global.y1CoorList[l],
+            Global.y1CoorList[h],
+        )
         if show:
             delay(0)
 
@@ -592,24 +583,19 @@ def stoogeSort(l, h, show):
 
 
 def callStoogeSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     stoogeSort(0, n - 1, 0)
     cycleSort()
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def introsort_helper(start, end, maxdepth):
-    global y1CoorList
+    # global Global.y1CoorList
     if end - start <= 1:
         return
     elif maxdepth == 0:
@@ -621,16 +607,16 @@ def introsort_helper(start, end, maxdepth):
 
 
 def partition2(start, end):
-    global y1CoorList
-    pivot = y1CoorList[start]
+    # global Global.y1CoorList
+    pivot = Global.y1CoorList[start]
     i = start - 1
     j = end
     while True:
         i = i + 1
-        while y1CoorList[i] < pivot:
+        while Global.y1CoorList[i] < pivot:
             i = i + 1
         j = j - 1
-        while y1CoorList[j] > pivot:
+        while Global.y1CoorList[j] > pivot:
             j = j - 1
         if i >= j:
             return j
@@ -639,12 +625,15 @@ def partition2(start, end):
 
 
 def swap(i, j):
-    global y1CoorList
-    y1CoorList[i], y1CoorList[j] = y1CoorList[j], y1CoorList[i]
+    # global Global.y1CoorList
+    Global.y1CoorList[i], Global.y1CoorList[j] = (
+        Global.y1CoorList[j],
+        Global.y1CoorList[i],
+    )
 
 
 def heapsort2(start, end):
-    global y1CoorList
+    # global Global.y1CoorList
     build_max_heap(start, end)
     for i in range(end - 1, start, -1):
         swap(start, i)
@@ -652,7 +641,7 @@ def heapsort2(start, end):
 
 
 def build_max_heap(start, end):
-    global y1CoorList
+    # global Global.y1CoorList
 
     def parent(i):
         return (i - 1) // 2
@@ -665,7 +654,7 @@ def build_max_heap(start, end):
 
 
 def max_heapify(index, start, end):
-    global y1CoorList
+    # global Global.y1CoorList
 
     def left(i):
         return 2 * i + 1
@@ -676,11 +665,11 @@ def max_heapify(index, start, end):
     size = end - start
     l = left(index)
     r = right(index)
-    if l < size and y1CoorList[start + l] > y1CoorList[start + index]:
+    if l < size and Global.y1CoorList[start + l] > Global.y1CoorList[start + index]:
         largest = l
     else:
         largest = index
-    if r < size and y1CoorList[start + r] > y1CoorList[start + largest]:
+    if r < size and Global.y1CoorList[start + r] > Global.y1CoorList[start + largest]:
         largest = r
     if largest != index:
         swap(start + largest, start + index)
@@ -688,76 +677,61 @@ def max_heapify(index, start, end):
 
 
 def introSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
-    maxdepth = (len(y1CoorList).bit_length() - 1) * 2
+    maxdepth = (len(Global.y1CoorList).bit_length() - 1) * 2
     introsort_helper(0, n, maxdepth)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def cycleSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     writes = 0
-    for cycleStart in range(len(y1CoorList) - 1):
-        item = y1CoorList[cycleStart]
+    for cycleStart in range(len(Global.y1CoorList) - 1):
+        item = Global.y1CoorList[cycleStart]
         pos = cycleStart
-        for i in range(cycleStart + 1, len(y1CoorList)):
-            if y1CoorList[i] < item:
+        for i in range(cycleStart + 1, len(Global.y1CoorList)):
+            if Global.y1CoorList[i] < item:
                 pos += 1
         if pos == cycleStart:
             continue
-        while item == y1CoorList[pos]:
+        while item == Global.y1CoorList[pos]:
             pos += 1
-        y1CoorList[pos], item = item, y1CoorList[pos]
+        Global.y1CoorList[pos], item = item, Global.y1CoorList[pos]
         writes += 1
         while pos != cycleStart:
             pos = cycleStart
-            for i in range(cycleStart + 1, len(y1CoorList)):
-                if y1CoorList[i] < item:
+            for i in range(cycleStart + 1, len(Global.y1CoorList)):
+                if Global.y1CoorList[i] < item:
                     pos += 1
-            while item == y1CoorList[pos]:
+            while item == Global.y1CoorList[pos]:
                 pos += 1
 
-            y1CoorList[pos], item = item, y1CoorList[pos]
+            Global.y1CoorList[pos], item = item, Global.y1CoorList[pos]
             writes += 1
             delay(0)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def beadSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
-    maximum = max(y1CoorList)
+    maximum = max(Global.y1CoorList)
     beads = [[0] * maximum for _ in range(n)]
 
     for i in range(n):
-        for j in range(y1CoorList[i]):
+        for j in range(Global.y1CoorList[i]):
             beads[i][j] = 1
     for j in range(maximum):
         drop_beads_by_column = 0
@@ -768,21 +742,16 @@ def beadSort():
             beads[i][j] = 1
         for i in range(n):
             num_beads_in_row = beads[i].count(1)
-            y1CoorList[i] = num_beads_in_row
+            Global.y1CoorList[i] = num_beads_in_row
         delay(0)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def mergeSortI():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     unit = 1
@@ -793,66 +762,22 @@ def mergeSortI():
             mid = h + unit
             p, q = l, mid
             while p < mid and q < r:
-                if y1CoorList[p] <= y1CoorList[q]:
+                if Global.y1CoorList[p] <= Global.y1CoorList[q]:
                     p += 1
                 else:
-                    tmp = y1CoorList[q]
-                    y1CoorList[p + 1 : q + 1] = y1CoorList[p:q]
-                    y1CoorList[p] = tmp
+                    tmp = Global.y1CoorList[q]
+                    Global.y1CoorList[p + 1 : q + 1] = Global.y1CoorList[p:q]
+                    Global.y1CoorList[p] = tmp
                     p, mid, q = p + 1, mid + 1, q + 1
                     delay(0.01)
         unit *= 2
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
-
-
-def DBSelectionSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
-        return
-    blockBtn()
-    j = n - 1
-    for i in range(j):
-        min = y1CoorList[i]
-        max = y1CoorList[i]
-        min_i = i
-        max_i = i
-        for k in range(i, j + 1):
-            if y1CoorList[k] > max:
-                max = y1CoorList[k]
-                max_i = k
-            elif y1CoorList[k] < min:
-                min = y1CoorList[k]
-                min_i = k
-
-        temp = y1CoorList[i]
-        y1CoorList[i] = y1CoorList[min_i]
-        y1CoorList[min_i] = temp
-
-        if y1CoorList[min_i] == max:
-            temp = y1CoorList[j]
-            y1CoorList[j] = y1CoorList[min_i]
-            y1CoorList[min_i] = temp
-        else:
-            temp = y1CoorList[j]
-            y1CoorList[j] = y1CoorList[max_i]
-            y1CoorList[max_i] = temp
-
-        j -= 1
-        delay(0.05)
-    sortdone = True
-    unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def dual_pivot_sort(start, top):
-    global y1CoorList
+    # global Global.y1CoorList
     if top <= start:
         return
     p = start
@@ -860,25 +785,40 @@ def dual_pivot_sort(start, top):
     k = p + 1
     h = k
     l = q - 1
-    if y1CoorList[p] > y1CoorList[q]:
-        y1CoorList[p], y1CoorList[q] = y1CoorList[q], y1CoorList[p]
+    if Global.y1CoorList[p] > Global.y1CoorList[q]:
+        Global.y1CoorList[p], Global.y1CoorList[q] = (
+            Global.y1CoorList[q],
+            Global.y1CoorList[p],
+        )
     while k <= l:
-        if y1CoorList[k] < y1CoorList[p]:
-            y1CoorList[h], y1CoorList[k] = y1CoorList[k], y1CoorList[h]
+        if Global.y1CoorList[k] < Global.y1CoorList[p]:
+            Global.y1CoorList[h], Global.y1CoorList[k] = (
+                Global.y1CoorList[k],
+                Global.y1CoorList[h],
+            )
             h += 1
             k += 1
             delay(0.0)
-        elif y1CoorList[k] > y1CoorList[q]:
-            y1CoorList[k], y1CoorList[l] = y1CoorList[l], y1CoorList[k]
+        elif Global.y1CoorList[k] > Global.y1CoorList[q]:
+            Global.y1CoorList[k], Global.y1CoorList[l] = (
+                Global.y1CoorList[l],
+                Global.y1CoorList[k],
+            )
             l -= 1
             delay(0.0)
         else:
             k += 1
     h -= 1
     l += 1
-    y1CoorList[p], y1CoorList[h] = y1CoorList[h], y1CoorList[p]
+    Global.y1CoorList[p], Global.y1CoorList[h] = (
+        Global.y1CoorList[h],
+        Global.y1CoorList[p],
+    )
     # delay(0)
-    y1CoorList[q], y1CoorList[l] = y1CoorList[l], y1CoorList[q]
+    Global.y1CoorList[q], Global.y1CoorList[l] = (
+        Global.y1CoorList[l],
+        Global.y1CoorList[q],
+    )
     # delay(0)
     dual_pivot_sort(start, h - 1)
     dual_pivot_sort(h + 1, l - 1)
@@ -886,33 +826,31 @@ def dual_pivot_sort(start, top):
 
 
 def callDPQuickSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     dual_pivot_sort(0, n - 1)
     delay(0)
-    sortdone = True
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 def compAndSwap(i, j, dire):
-    global y1CoorList
-    if (dire == 1 and y1CoorList[i] > y1CoorList[j]) or (
-        dire == 0 and y1CoorList[i] < y1CoorList[j]
+    # global Global.y1CoorList
+    if (dire == 1 and Global.y1CoorList[i] > Global.y1CoorList[j]) or (
+        dire == 0 and Global.y1CoorList[i] < Global.y1CoorList[j]
     ):
-        y1CoorList[i], y1CoorList[j] = y1CoorList[j], y1CoorList[i]
+        Global.y1CoorList[i], Global.y1CoorList[j] = (
+            Global.y1CoorList[j],
+            Global.y1CoorList[i],
+        )
         delay(0)
 
 
 def bitonicMerge(low, cnt, dire):
-    global y1CoorList
+    # global Global.y1CoorList
     if cnt > 1:
         k = int(cnt / 2)
         for i in range(low, low + k):
@@ -930,20 +868,15 @@ def bitonicSort(low, cnt, dire):
 
 
 def callBitonicSort():
-    global y1CoorList, sortdone
-    if sortdone:
-        status.config(
-            text="Already Sorted. Press Shuffle.",
-            foreground="#FF0000",
-            font=Font(size=11, weight=BOLD),
-        )
+    # global Global.y1CoorList, Global.sortdone
+    if not check_sortdone():
         return
     blockBtn()
     up = 1
-    bitonicSort(0, len(y1CoorList), up)
-    sortdone = True
+    bitonicSort(0, len(Global.y1CoorList), up)
+    Global.sortdone = True
     unblockBtn()
-    print(y1CoorList)
+    print(Global.y1CoorList)
 
 
 screen.update()
@@ -1199,20 +1132,8 @@ b21 = Button(
     command=mergeSortI,
 )
 b21.place(x=canvasWidth + 10 * 15, y=5 + 30 * 7)
+
 b22 = Button(
-    screen,
-    text="Double Burst\nSelection Sort",
-    image=pixelVirtual,
-    width=110,
-    height=46,
-    compound="c",
-    relief="groove",
-    activebackground="white",
-    bg="white",
-    command=DBSelectionSort,
-)
-b22.place(x=canvasWidth + 10 * 15, y=5 + 30 * 8)
-b23 = Button(
     screen,
     text="Dual Pivot Quick Sort",
     image=pixelVirtual,
@@ -1223,8 +1144,8 @@ b23 = Button(
     bg="white",
     command=callDPQuickSort,
 )
-b23.place(x=canvasWidth + 10 * 15, y=5 + 30 * 10)
-b24 = Button(
+b22.place(x=canvasWidth + 10 * 15, y=5 + 30 * 8)
+b23 = Button(
     screen,
     text="Bitonic Sort",
     image=pixelVirtual,
@@ -1235,7 +1156,7 @@ b24 = Button(
     bg="white",
     command=callBitonicSort,
 )
-b24.place(x=canvasWidth + 10 * 15, y=5 + 30 * 11)
+b23.place(x=canvasWidth + 10 * 15, y=5 + 30 * 9)
 
 
 btnList = [
@@ -1262,7 +1183,6 @@ btnList = [
     b21,
     b22,
     b23,
-    b24,
 ]
 
 toplabel = Label(
@@ -1294,9 +1214,9 @@ drawPipes()
 
 
 def _delete_window():
-    global closeWindow
+    # global closeWindow
     print("delete_window")
-    closeWindow = True
+    Global.closeWindow = True
     # clearCanvas()
     # canvas.destroy()
     screen.quit()
