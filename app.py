@@ -1,6 +1,7 @@
 from tkinter import Tk, Canvas, PhotoImage, Button, Label
 from tkinter.font import Font, BOLD
-import random, time
+import random
+import time
 import sys
 
 canvasbackground = "#191919"
@@ -84,7 +85,6 @@ def unblockBtn():
 
 def clearCanvas():
     canvas.delete("all")
-    return
 
 
 def shufflePipes():
@@ -598,7 +598,7 @@ def introsort_helper(start, end, maxdepth):
     # global Global.y1CoorList
     if end - start <= 1:
         return
-    elif maxdepth == 0:
+    if maxdepth == 0:
         heapsort2(start, end)
     else:
         p = partition2(start, end)
