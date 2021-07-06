@@ -9,13 +9,18 @@ Python app that visually shows how different sorting algorithms work.
 
 Made in python using `Tkinter` module.
 
-<p align=center>Before sorting</p>
+---
+
+<p align=center><code>Before sorting</code></p>
+
 
 ![GUI](before-sorting.png)
 
-<p align=center>After sorting</p>
+<p align=center><code>After sorting</code></p>
 
 ![GUI](after-sorting.png)
+
+---
 
 ### Python Dependencies:
 
